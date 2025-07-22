@@ -1,0 +1,21 @@
+{
+  "name": "Airflow Devcontainer",
+  "dockerFile": "Dockerfile",
+  "context": "..",
+  "appPort": [8080],
+  "mounts": [
+    "source=${localWorkspaceFolder}/dags,target=/opt/airflow/dags,type=bind,consistency=cached",
+    "source=${localWorkspaceFolder}/plugins,target=/opt/airflow/plugins,type=bind,consistency=cached"
+  ],
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "python.pythonPath": "/usr/local/bin/python",
+        "python.analysis.extraPaths": [
+          "/opt/airflow/dags"
+        ]
+      }
+    }
+  },
+  "remoteUser": "airflow"
+}
