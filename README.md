@@ -26,7 +26,7 @@ cd <your-repo-folder>
 ### 2. Setup .env file
 Create a .env file in the root folder with the following content:
 
-AIRFLOW__API_AUTH__JWT_SECRET=<your-generated-key>
+AIRFLOW__API_AUTH__JWT_SECRET=your-generated-key
 
 To generate a key, run:
 ```bash
