@@ -1,4 +1,5 @@
 import logging
+import os
 
 from airflow.hooks.base import BaseHook
 
@@ -8,7 +9,7 @@ from googleapiclient.errors import HttpError
 
 from base_storage_hook import BaseStorageHook
 
-SERVICE_ACCOUNT_FILE = 'service_account.json'
+SERVICE_ACCOUNT_FILE = os.getenv("GOOGLE_SERVICE_ACCOUNT_CREDENTIALS")
 SCOPES = ['https://www.googleapis.com/auth/drive']
 
 class GoogleDriveHook(BaseHook, BaseStorageHook):

@@ -2,3 +2,4 @@ logs/
 __pycache__
 airflow.cfg
 .env
+service_account.json
