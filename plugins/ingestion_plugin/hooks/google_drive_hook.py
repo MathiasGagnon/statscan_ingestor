@@ -1,15 +1,20 @@
 import logging
 import os
+from typing import Optional
 
 from airflow.hooks.base import BaseHook
 
 from googleapiclient.discovery import build
 from google.oauth2 import service_account
 from googleapiclient.errors import HttpError
+from googleapiclient.discovery import Resource
 
 from base_storage_hook import BaseStorageHook
 
 SERVICE_ACCOUNT_FILE = os.getenv("GOOGLE_SERVICE_ACCOUNT_CREDENTIALS")
+if not SERVICE_ACCOUNT_FILE:
+    raise RuntimeError("Environment variable 'GOOGLE_SERVICE_ACCOUNT_CREDENTIALS' is not set.")
+
 SCOPES = ['https://www.googleapis.com/auth/drive']
 
 class GoogleDriveHook(BaseHook, BaseStorageHook):
@@ -17,33 +22,36 @@ class GoogleDriveHook(BaseHook, BaseStorageHook):
     def __init__(self):
         self.service = self._get_service()
 
-    def _get_service(self):
+    def _get_service(self) -> Resource:
         creds = service_account.Credentials.from_service_account_file(
             SERVICE_ACCOUNT_FILE, scopes=SCOPES
         )
         return build("drive", "v3", credentials=creds)
 
-    def list_files(self, folder_id: str):
+    def list_files(self, folder_id: str) -> Optional[list[dict[str, str]]]:
         query = f"'{folder_id}' in parents and trashed = false"
-        results = self.service.files().list(
-            q=query,
-            pageSize=100,
-            fields="nextPageToken, files(id, name)"
-        ).execute()
-        items = results.get('files', [])
-
-        if not items:
-            logging.info('No files found.')
-        else:
+        try:
+            results = self.service.files().list(
+                q=query,
+                pageSize=100,
+                fields="nextPageToken, files(id, name)"
+            ).execute()
+            items = results.get('files', [])
+            if not items:
+                logging.info('No files found.')
+                return None
             return items
+        except HttpError as e:
+            logging.error(f"Failed to list files in folder {folder_id}: {e}")
+            raise
 
-    def copy_file(self, source_identifier: str, destination_identifier: str, new_name: str = None):
+    def copy_file(self, source_identifier: str, destination_identifier: str, new_name: str = None) -> dict:
         body = {"parents": [destination_identifier]}
         if new_name:
             body["name"] = new_name
         return self.service.files().copy(fileId=source_identifier, body=body).execute()
 
-    def get_or_create_folder(self, folder_name: str, parent_folder_id: str):
+    def get_or_create_folder(self, folder_name: str, parent_folder_id: str) -> str:
         query = (
             f"mimeType='application/vnd.google-apps.folder' and "
             f"name='{folder_name}' and '{parent_folder_id}' in parents and trashed = false"
@@ -62,7 +70,7 @@ class GoogleDriveHook(BaseHook, BaseStorageHook):
             folder = self.service.files().create(body=folder_metadata, fields="id").execute()
             return folder['id']
 
-    def get_file_by_name(self, file_name: str, parent_folder_id: str):
+    def get_file_by_name(self, file_name: str, parent_folder_id: str) -> Optional[dict[str, str]]:
         query = (
             f"name='{file_name}' and '{parent_folder_id}' in parents and trashed = false"
         )
