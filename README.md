@@ -55,6 +55,13 @@ http://localhost:8080
 
 The default login is Airflow:Airflow, which can be modified in the docker-compose file.
 
+### 4. Testing
+The pytest library is used to test this project. To run them you will need to do the following commands:
+
+``` bash
+docker-compose exec airflow-worker bash
+pytest test/
+```
 --- 
 ## References
 Official Apache Airflow Docker Compose documentation:

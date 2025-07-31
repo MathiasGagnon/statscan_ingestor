@@ -2,7 +2,7 @@ from datetime import datetime
 
 from airflow import DAG
 
-from ingestion_plugin.operators.file_ingestion_operator import FileIngestionOperator
+from plugins.ingestion_plugin.operators.file_ingestion_operator import FileIngestionOperator
 
 default_args = {
     "start_date": datetime(2023, 1, 1),

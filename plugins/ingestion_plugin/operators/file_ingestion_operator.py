@@ -6,9 +6,8 @@ from typing import Optional
 from airflow.models import BaseOperator
 from airflow.utils.context import Context
 
-from ingestion_plugin.hooks.storage_hook_strategy_registry import STORAGE_HOOK_STRATEGY_REGISTRY
-from ingestion_plugin.hooks.base_storage_hook import BaseStorageHook
-from ingestion_plugin.hooks.google_drive_hook import GoogleDriveHook
+from plugins.ingestion_plugin.hooks.storage_hook_strategy_registry import STORAGE_HOOK_STRATEGY_REGISTRY
+from plugins.ingestion_plugin.hooks.base_storage_hook import BaseStorageHook
 
 METADATA_FILETYPE = '.yml'
 SUPPORTED_FILE_TYPES = ['.csv', '.xlsx']
