@@ -1,0 +1,6 @@
+clients:
+  - name: gdrive_ingest
+    landing_zone_folder_id: "1gG1U04ROlS_cgurXVr_91hJL5lxxwpwQ"
+    raw_storage_root_folder_id: "1L13HvomfC3dnc_gZLRqApFxryYzND888"
+    hook_type: "google_drive"
+    schedule: "@hourly"
